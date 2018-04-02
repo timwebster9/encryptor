@@ -1,11 +1,11 @@
 package encrypt
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"errors"
-    "crypto/cipher"
-    "crypto/aes"
-    "crypto/rand"
-    "io"
+	"io"
 )
 
 func encrypt(plaintext string, key string) (string, error) {
@@ -20,40 +20,40 @@ func decrypt(plaintext string, key string) (string, error) {
 
 func encryptBytes(plaintext []byte, key []byte) ([]byte, error) {
 	c, err := aes.NewCipher(key)
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    gcm, err := cipher.NewGCM(c)
-    if err != nil {
-        return nil, err
-    }
+	gcm, err := cipher.NewGCM(c)
+	if err != nil {
+		return nil, err
+	}
 
-    nonce := make([]byte, gcm.NonceSize())
-    if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-        return nil, err
-    }
+	nonce := make([]byte, gcm.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		return nil, err
+	}
 
-    return gcm.Seal(nonce, nonce, plaintext, nil), nil
+	return gcm.Seal(nonce, nonce, plaintext, nil), nil
 }
 
 func decryptBytes(encrypted []byte, key []byte) ([]byte, error) {
 
-    c, err := aes.NewCipher(key)
-    if err != nil {
-        return nil, err
-    }
+	c, err := aes.NewCipher(key)
+	if err != nil {
+		return nil, err
+	}
 
-    gcm, err := cipher.NewGCM(c)
-    if err != nil {
-        return nil, err
-    }
+	gcm, err := cipher.NewGCM(c)
+	if err != nil {
+		return nil, err
+	}
 
-    nonceSize := gcm.NonceSize()
-    if len(encrypted) < nonceSize {
-        return nil, errors.New("ciphertext too short")
-    }
+	nonceSize := gcm.NonceSize()
+	if len(encrypted) < nonceSize {
+		return nil, errors.New("ciphertext too short")
+	}
 
-    nonce, encrypted := encrypted[:nonceSize], encrypted[nonceSize:]
-    return gcm.Open(nil, nonce, encrypted, nil)
+	nonce, encrypted := encrypted[:nonceSize], encrypted[nonceSize:]
+	return gcm.Open(nil, nonce, encrypted, nil)
 }
