@@ -8,12 +8,14 @@ import (
 	"io"
 )
 
-func encrypt(plaintext string, key string) (string, error) {
+// Encrypt a plaintext string using the provided AES key
+func Encrypt(plaintext string, key string) (string, error) {
 	encrypted, err := encryptBytes([]byte(plaintext), []byte(key))
 	return string(encrypted[:]), err
 }
 
-func decrypt(plaintext string, key string) (string, error) {
+// Decrypt an encrypted string using the provided AES key
+func Decrypt(plaintext string, key string) (string, error) {
 	decryptedBytes, err := decryptBytes([]byte(plaintext), []byte(key))
 	return string(decryptedBytes[:]), err
 }
